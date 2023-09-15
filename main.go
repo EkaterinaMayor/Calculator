@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strings"
 	"strconv"
+	"strings"
 )
 
 var romanNumerals = map[string]int{
@@ -64,6 +64,11 @@ func main() {
 		operator := parts[1]
 		result := 0
 
+		if (num1 < 1 || num1 > 10 || num2 < 1 || num2 > 10) && !isRomanNumeral(parts[0]) && !isRomanNumeral(parts[2]) {
+			fmt.Println("Error: Numbers must be between 1 and 10")
+			continue
+		}
+
 		switch operator {
 		case "+":
 			result = num1 + num2
@@ -84,7 +89,11 @@ func main() {
 		}
 
 		if isRomanNumeral(parts[0]) && isRomanNumeral(parts[2]) {
-			fmt.Printf("Result: %s\n", getRomanNumeral(result))
+			if result < 1 {
+				fmt.Println("Error: Result cannot be represented as a Roman numeral")
+			} else {
+				fmt.Printf("Result: %s\n", getRomanNumeral(result))
+			}
 		} else {
 			fmt.Printf("Result: %d\n", result)
 		}
