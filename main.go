@@ -4,13 +4,17 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strconv"
 	"strings"
 )
 
 var romanNumerals = map[string]int{
 	"I": 1, "II": 2, "III": 3, "IV": 4, "V": 5,
 	"VI": 6, "VII": 7, "VIII": 8, "IX": 9, "X": 10,
+}
+
+var arabicNumerals = map[int]string{
+	1: "I", 2: "II", 3: "III", 4: "IV", 5: "V",
+	6: "VI", 7: "VII", 8: "VIII", 9: "IX", 10: "X",
 }
 
 func isRomanNumeral(s string) bool {
@@ -20,6 +24,20 @@ func isRomanNumeral(s string) bool {
 
 func parseRomanNumeral(s string) int {
 	return romanNumerals[s]
+}
+
+func toRomanNumeral(n int) string {
+	if n <= 0 {
+		return "Error"
+	}
+	roman := ""
+	for _, numeral := range []int{10, 9, 5, 4, 1} {
+		for n >= numeral {
+			roman += arabicNumerals[numeral]
+			n -= numeral
+		}
+	}
+	return roman
 }
 
 func main() {
@@ -45,29 +63,18 @@ func main() {
 			continue
 		}
 
-		var num1, num2 int
-		var err1, err2 error
+		num1, num2 := 0, 0
 
 		if isRomanNumeral(parts[0]) && isRomanNumeral(parts[2]) {
 			num1 = parseRomanNumeral(parts[0])
 			num2 = parseRomanNumeral(parts[2])
 		} else {
-			num1, err1 = strconv.Atoi(parts[0])
-			num2, err2 = strconv.Atoi(parts[2])
-
-			if err1 != nil || err2 != nil {
-				fmt.Println("Error: Invalid number")
-				continue
-			}
+			fmt.Println("Error: Invalid number")
+			continue
 		}
 
 		operator := parts[1]
 		result := 0
-
-		if (num1 < 1 || num1 > 10 || num2 < 1 || num2 > 10) && !isRomanNumeral(parts[0]) && !isRomanNumeral(parts[2]) {
-			fmt.Println("Error: Numbers must be between 1 and 10")
-			continue
-		}
 
 		switch operator {
 		case "+":
@@ -92,24 +99,10 @@ func main() {
 			if result < 1 {
 				fmt.Println("Error: Result cannot be represented as a Roman numeral")
 			} else {
-				fmt.Printf("Result: %s\n", getRomanNumeral(result))
+				fmt.Printf("Result: %s\n", toRomanNumeral(result))
 			}
 		} else {
 			fmt.Printf("Result: %d\n", result)
 		}
 	}
-}
-
-func getRomanNumeral(n int) string {
-	romanNumeral := ""
-	for n > 0 {
-		for numeral, value := range romanNumerals {
-			if value <= n {
-				romanNumeral += numeral
-				n -= value
-				break
-			}
-		}
-	}
-	return romanNumeral
 }
